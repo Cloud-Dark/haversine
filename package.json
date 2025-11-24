@@ -15,17 +15,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/niix/haversine"
+    "url": "https://github.com/Cloud-Dark/haversine-custom"
   },
   "keywords": [
     "haversine",
     "distance",
     "coordinates",
-    "geolocation"
+    "geolocation",
+    "bearing",
+    "midpoint"
   ],
-  "author": "Nick Justice (niix)",
+  "author": "Cloud-Dark",
   "maintainers": [
-    "Elijah Lopez"
+    "Cloud-Dark"
   ],
   "license": "MIT",
   "devDependencies": {
