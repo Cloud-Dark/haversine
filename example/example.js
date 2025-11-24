@@ -16,37 +16,26 @@ const end = {
 const startString = "30.849635,-83.24559";
 const endString = "27.950575,-82.457178";
 
-console.log(haversine(start, end)); // unit: 'km'
-// 331.281531778995
-console.log(haversine(start, end, { unit: 'mile' }));
-// 205.91349330479048
-console.log(haversine(start, end, { unit: 'meter' }));
-// 331281.531778995
-console.log(haversine(start, end, { unit: 'cm' }));
-// 33128153.1778995
-console.log(haversine(start, end, { unit: 'ft' }));
-// 1086881.6692257049
-console.log(haversine(start, end, { unit: 'in' }));
-// 13042580.030708458
-console.log(haversine(start, end, { threshold: 1 }));
-// false
-console.log(haversine(start, end, { threshold: 1, unit: 'mile' }));
-// false
-console.log(haversine(start, end, { threshold: 1, unit: 'meter' }));
-// false
+console.log("Jarak antara dua titik (km):", haversine(start, end));
+console.log("Jarak antara dua titik (mil):", haversine(start, end, { unit: 'mile' }));
+console.log("Jarak antara dua titik (meter):", haversine(start, end, { unit: 'meter' }));
+console.log("Jarak antara dua titik (cm):", haversine(start, end, { unit: 'cm' }));
+console.log("Jarak antara dua titik (ft):", haversine(start, end, { unit: 'ft' }));
+console.log("Jarak antara dua titik (inci):", haversine(start, end, { unit: 'in' }));
+console.log("Apakah jarak < 1 km? (true/false):", haversineModule.haversineIsWithin(start, end, 1));
+console.log("Apakah jarak < 1 mil? (true/false):", haversineModule.haversineIsWithin(start, end, 1, { unit: 'mile' }));
+console.log("Apakah jarak < 1 meter? (true/false):", haversineModule.haversineIsWithin(start, end, 1, { unit: 'meter' }));
 
 // Using string coordinates:
-console.log(haversine(startString, endString)); // Also works with string coordinates
-// 331.281531778995
+console.log("Jarak dengan string coordinates:", haversine(startString, endString));
 
 // Using the new functions:
 const { haversineBearing, haversineMidpoint } = haversineModule;
 
-console.log(haversineBearing(start, end)); // 223.54 (degrees from North)
-console.log(haversineMidpoint(start, end));
-// { latitude: 29.399..., longitude: -82.851... }
+console.log("Arah antara dua titik (derajat dari utara):", haversineBearing(start, end));
+console.log("Titik tengah antara dua titik:", haversineMidpoint(start, end));
 
 // Using additional units:
-console.log(haversine(start, end, { unit: 'cm' }));  // in centimeters
-console.log(haversine(start, end, { unit: 'ft' }));  // in feet
-console.log(haversine(start, end, { unit: 'in' }));  // in inches
+console.log("Jarak dalam cm:", haversine(start, end, { unit: 'cm' }));
+console.log("Jarak dalam ft:", haversine(start, end, { unit: 'ft' }));
+console.log("Jarak dalam inci:", haversine(start, end, { unit: 'in' }));
