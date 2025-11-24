@@ -1,7 +1,7 @@
 {
-  "name": "haversine",
+  "name": "haversine-custom",
   "version": "2.0.0",
-  "description": "A simple haversine module",
+  "description": "An enhanced haversine module with additional features",
   "main": "dist/src/haversine.js",
   "types": "dist/src/haversine.d.ts",
   "directories": {

@@ -1,18 +1,18 @@
-# Haversine
+# Haversine Custom
 
-A simple haversine formula module for Node.js
+An enhanced haversine formula module for Node.js with additional features
 
 ## Installation
 
-`npm install haversine` or `yarn add haversine`
+`npm install haversine-custom` or `yarn add haversine-custom`
 
 ## Usage
 
 ### haversine (start, end, options)
 
 ```js
-const haversine = require('haversine');
-// import haversine from 'haversine';
+const haversine = require('haversine-custom');
+// import haversine from 'haversine-custom';
 
 const start = {
   latitude: 30.849635,
@@ -52,7 +52,7 @@ console.log(haversine(startString, endString)); // Also works with string coordi
 // 331.281531778995
 
 // Using the new functions:
-const { haversineBearing, haversineMidpoint } = require('haversine');
+const { haversineBearing, haversineMidpoint } = require('haversine-custom');
 
 console.log(haversineBearing(start, end)); // 223.54 (degrees from North)
 console.log(haversineMidpoint(start, end));
@@ -85,7 +85,7 @@ console.log(haversine(start, end, { unit: 'in' }));  // in inches
 ### haversineBearing (start, end, options)
 
 ```js
-const { haversineBearing } = require('haversine');
+const { haversineBearing } = require('haversine-custom');
 
 const start = {
   latitude: 30.849635,
@@ -108,7 +108,7 @@ Calculates the initial bearing (forward azimuth) between two points.
 ### haversineMidpoint (start, end, options)
 
 ```js
-const { haversineMidpoint } = require('haversine');
+const { haversineMidpoint } = require('haversine-custom');
 
 const start = {
   latitude: 30.849635,
