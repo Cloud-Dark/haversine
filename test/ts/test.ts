@@ -80,6 +80,19 @@ suite('haversine', function () {
     }
   });
 
+  test('it should work with additional units (cm, ft, in)', function () {
+    // Test with known distance and convert to different units
+    const distanceKm = haversine(start, end);
+    const distanceCm = haversine(start, end, { unit: 'cm' });
+    const distanceFt = haversine(start, end, { unit: 'ft' });
+    const distanceIn = haversine(start, end, { unit: 'in' });
+
+    // Check that conversions are mathematically correct
+    assert.ok(Math.abs(distanceCm - (distanceKm * 100000)) < 0.1); // cm conversion
+    assert.ok(Math.abs(distanceFt - (distanceKm * 3280.84)) < 0.1); // ft conversion
+    assert.ok(Math.abs(distanceIn - (distanceKm * 39370.1)) < 1); // in conversion
+  });
+
   test('it should return true that distance is within 1 mi threshold', function () {
     assert.equal(true, haversineIsWithin(tests[0][0], tests[0][1], 1, { unit: 'mile' }));
   });

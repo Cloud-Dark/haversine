@@ -1,4 +1,4 @@
-export type Unit = 'km' | 'mile' | 'meter' | 'nmi';
+export type Unit = 'km' | 'mile' | 'meter' | 'nmi' | 'cm' | 'ft' | 'in';
 
 export type CoordinateFormat = '[lat,lon]' | '[lon,lat]' | '{lon,lat}' | '{lat,lng}' | 'geojson' | undefined;
 
@@ -40,7 +40,10 @@ const RADII: Record<Unit, number> = {
   km: 6371,      // kilometer
   mile: 3960,    // mile
   meter: 6371000, // meter
-  nmi: 3440      // nautical mile
+  nmi: 3440,     // nautical mile
+  cm: 637100000, // centimeter (100,000 cm in a km)
+  ft: 20902231,  // foot (approximately 3280.84 feet in a km)
+  in: 250826772  // inch (12 inches in a foot, ~39370.1 inches in a km)
 };
 
 // num: coordinate difference

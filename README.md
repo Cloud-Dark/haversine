@@ -34,6 +34,12 @@ console.log(haversine(start, end, { unit: 'mile' }));
 // 205.91349330479048
 console.log(haversine(start, end, { unit: 'meter' }));
 // 331281.531778995
+console.log(haversine(start, end, { unit: 'cm' }));
+// 33128153.1778995
+console.log(haversine(start, end, { unit: 'ft' }));
+// 1086881.6692257049
+console.log(haversine(start, end, { unit: 'in' }));
+// 13042580.030708458
 console.log(haversine(start, end, { threshold: 1 }));
 // false
 console.log(haversine(start, end, { threshold: 1, unit: 'mile' }));
@@ -51,11 +57,16 @@ const { haversineBearing, haversineMidpoint } = require('haversine');
 console.log(haversineBearing(start, end)); // 223.54 (degrees from North)
 console.log(haversineMidpoint(start, end));
 // { latitude: 29.399..., longitude: -82.851... }
+
+// Using additional units:
+console.log(haversine(start, end, { unit: 'cm' }));  // in centimeters
+console.log(haversine(start, end, { unit: 'ft' }));  // in feet
+console.log(haversine(start, end, { unit: 'in' }));  // in inches
 ```
 
 #### API Reference
 
-- `options.unit = 'km'` - Unit of measurement applied to result { `km` for kilometer, `mile`, `meter`, `nmi` for nautical mile }
+- `options.unit = 'km'` - Unit of measurement applied to result { `km` for kilometer, `mile` for miles, `meter`, `nmi` for nautical mile, `cm` for centimeter, `ft` for feet, `in` for inches }
   - if invalid, the function will throw a TypeError
 - `options.threshold = undefined` - If a number is provided, the funciton will return a boolean indicating if the two points are within this distance
 - `options.format = undefined` - The format of start and end coordinate arguments. See table below for available values.
