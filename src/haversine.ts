@@ -28,7 +28,8 @@ type CoordinateInput =
   | [number, number]
   | LatLonCoordinates
   | LatLngCoordinates
-  | GeoJsonCoordinates;
+  | GeoJsonCoordinates
+  | string;
 
 interface HaversineOptions {
   unit?: Unit;
@@ -49,6 +50,20 @@ function convertToRadian(num: number): number {
 
 // convert coordinates to standard format based on the passed format option
 function convertCoordinates(format: CoordinateFormat, coordinates: CoordinateInput): StandardCoordinates {
+  // Handle string format
+  if (typeof coordinates === 'string') {
+    // Parse string coordinates in format "lat,lon" or "lat;lon"
+    const parts = coordinates.split(/[,;]/);
+    if (parts.length === 2) {
+      const lat = parseFloat(parts[0].trim());
+      const lon = parseFloat(parts[1].trim());
+      if (!isNaN(lat) && !isNaN(lon)) {
+        return { latitude: lat, longitude: lon };
+      }
+    }
+    throw new TypeError(`Invalid string coordinate format. Expected "lat,lon" or "lat;lon", got: ${coordinates}`);
+  }
+
   switch (format) {
     case '[lat,lon]':
       const latLon = coordinates as [number, number];
@@ -66,7 +81,24 @@ function convertCoordinates(format: CoordinateFormat, coordinates: CoordinateInp
       const geoJson = coordinates as GeoJsonCoordinates;
       return { latitude: geoJson.geometry.coordinates[1], longitude: geoJson.geometry.coordinates[0] };
     case undefined:
-      return coordinates as StandardCoordinates;
+      // For non-string inputs without format, assume standard format
+      if (Array.isArray(coordinates)) {
+        const coordArray = coordinates as [number, number];
+        return { latitude: coordArray[0], longitude: coordArray[1] };
+      } else if ((coordinates as StandardCoordinates).latitude !== undefined) {
+        return coordinates as StandardCoordinates;
+      } else if ((coordinates as LatLonCoordinates).lat !== undefined && (coordinates as LatLonCoordinates).lon !== undefined) {
+        const obj = coordinates as LatLonCoordinates;
+        return { latitude: obj.lat, longitude: obj.lon };
+      } else if ((coordinates as LatLngCoordinates).lat !== undefined && (coordinates as LatLngCoordinates).lng !== undefined) {
+        const obj = coordinates as LatLngCoordinates;
+        return { latitude: obj.lat, longitude: obj.lng };
+      } else if ((coordinates as GeoJsonCoordinates).geometry !== undefined) {
+        const obj = coordinates as GeoJsonCoordinates;
+        return { latitude: obj.geometry.coordinates[1], longitude: obj.geometry.coordinates[0] };
+      } else {
+        throw new TypeError(`Invalid coordinate format provided. Got ${JSON.stringify(coordinates)}`);
+      }
     default:
       throw new TypeError(`Invalid format provided. Got ${JSON.stringify(format)}`);
   }
@@ -114,4 +146,89 @@ export default function haversine(
  */
 export function haversineIsWithin(startCoordinates: CoordinateInput, endCoordinates: CoordinateInput, threshold: number, { unit = 'km', format }: HaversineOptions = {}) {
   return threshold > haversine(startCoordinates, endCoordinates, { unit, format });
+}
+
+/**
+ * Calculate the bearing (angle) between two points.
+ * @param startCoordinates Starting coordinates in the format provided by `format`
+ * @param endCoordinates Ending coordinates in the format provided by `format`
+ * @param options Options object with format
+ * @returns Bearing in degrees from North (0-360)
+ */
+export function haversineBearing(
+  startCoordinates: CoordinateInput,
+  endCoordinates: CoordinateInput,
+  { format }: Pick<HaversineOptions, 'format'> = {}
+): number {
+  let start: StandardCoordinates;
+  let end: StandardCoordinates;
+
+  try {
+    start = convertCoordinates(format, startCoordinates);
+    end = convertCoordinates(format, endCoordinates);
+  } catch (e) {
+    throw e;
+  }
+
+  const startLatRad = convertToRadian(start.latitude);
+  const endLatRad = convertToRadian(end.latitude);
+  const dLonRad = convertToRadian(end.longitude - start.longitude);
+
+  // Calculate bearing using the formula
+  const y = Math.sin(dLonRad) * Math.cos(endLatRad);
+  const x = Math.cos(startLatRad) * Math.sin(endLatRad) -
+            Math.sin(startLatRad) * Math.cos(endLatRad) * Math.cos(dLonRad);
+
+  let bearing = Math.atan2(y, x);
+  bearing = bearing * (180 / Math.PI); // Convert to degrees
+  return (bearing + 360) % 360; // Normalize to 0-360 degrees
+}
+
+/**
+ * Calculate the midpoint between two points.
+ * @param startCoordinates Starting coordinates in the format provided by `format`
+ * @param endCoordinates Ending coordinates in the format provided by `format`
+ * @param options Options object with format
+ * @returns Object with latitude and longitude of the midpoint
+ */
+export function haversineMidpoint(
+  startCoordinates: CoordinateInput,
+  endCoordinates: CoordinateInput,
+  { format }: Pick<HaversineOptions, 'format'> = {}
+): StandardCoordinates {
+  let start: StandardCoordinates;
+  let end: StandardCoordinates;
+
+  try {
+    start = convertCoordinates(format, startCoordinates);
+    end = convertCoordinates(format, endCoordinates);
+  } catch (e) {
+    throw e;
+  }
+
+  // Convert to radians
+  const startLatRad = convertToRadian(start.latitude);
+  const startLonRad = convertToRadian(start.longitude);
+  const endLatRad = convertToRadian(end.latitude);
+  const endLonRad = convertToRadian(end.longitude);
+
+  // Calculate differences
+  const dLon = endLonRad - startLonRad;
+
+  // Calculate midpoint using the formula
+  const Bx = Math.cos(endLatRad) * Math.cos(dLon);
+  const By = Math.cos(endLatRad) * Math.sin(dLon);
+
+  const lat3 = Math.atan2(
+    Math.sin(startLatRad) + Math.sin(endLatRad),
+    Math.sqrt((Math.cos(startLatRad) + Bx) * (Math.cos(startLatRad) + Bx) + By * By)
+  );
+
+  const lon3 = startLonRad + Math.atan2(By, Math.cos(startLatRad) + Bx);
+
+  // Convert back to degrees
+  return {
+    latitude: lat3 * (180 / Math.PI),
+    longitude: lon3 * (180 / Math.PI)
+  };
 }
